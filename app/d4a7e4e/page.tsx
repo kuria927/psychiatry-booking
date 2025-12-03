@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-const TEAM_MEMBERS = [
-  "Laure",
-  "Yiqi",
-  "Cindy",
-];
+const TEAM_MEMBERS = ["Laure", "Yiqi", "Cindy"];
+
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
 
 export default function ABTestPage() {
   const [variant, setVariant] = useState<string | null>(null);
@@ -14,17 +16,31 @@ export default function ABTestPage() {
   useEffect(() => {
     const storageKey = "abtest-variant";
 
-    // Check if already assigned
+    // If user already assigned a variant
     const existing = window.localStorage.getItem(storageKey);
     if (existing === "A" || existing === "B") {
       setVariant(existing);
+
+      // Analytics: track returning users
+      window.gtag?.("event", "ab_test_variant", {
+        variant: existing,
+        visitor_type: "returning",
+      });
+
       return;
     }
 
-    // Otherwise assign randomly
+    // Assign new variant
     const chosen = Math.random() < 0.5 ? "A" : "B";
     window.localStorage.setItem(storageKey, chosen);
     setVariant(chosen);
+
+    // Analytics: track first-time assignment
+    window.gtag?.("event", "ab_test_variant", {
+      variant: chosen,
+      visitor_type: "new",
+    });
+
   }, []);
 
   if (!variant) return <p>Loading A/B test…</p>;
@@ -38,27 +54,23 @@ export default function ABTestPage() {
         fontFamily: "system-ui, sans-serif",
         maxWidth: "600px",
         margin: "0 auto",
-        textAlign: "left",
       }}
     >
-      <h1 style={{ marginBottom: "16px" }}>A/B Test Page</h1>
+      <h1>A/B Test Page</h1>
 
-      <h2 style={{ marginBottom: "8px" }}>Team Member Nicknames</h2>
+      <h2>Team Member Nicknames</h2>
 
       <ul style={{ marginBottom: "32px", paddingLeft: "20px" }}>
         {TEAM_MEMBERS.map((name) => (
-          <li key={name} style={{ marginBottom: "6px" }}>
-            {name}
-          </li>
+          <li key={name}>{name}</li>
         ))}
       </ul>
 
-      {/* FIXED BUTTON — now visibly styled */}
       <button
         id="abtest"
         style={{
           padding: "12px 28px",
-          backgroundColor: "#0070f3",
+          backgroundColor: "#1a73e8",
           color: "white",
           border: "none",
           borderRadius: "6px",
@@ -76,4 +88,5 @@ export default function ABTestPage() {
     </main>
   );
 }
+
 

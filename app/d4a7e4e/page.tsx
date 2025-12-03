@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 
 const TEAM_MEMBERS = [
-  "laure",
-  "teammate1",
-  "teammate2",
-  // add more if needed!
+  "Laure",
+  "Yiqi",
+  "Cindy",
 ];
 
 export default function ABTestPage() {
@@ -15,17 +14,17 @@ export default function ABTestPage() {
   useEffect(() => {
     const storageKey = "abtest-variant";
 
-    // Check if variant already assigned
+    // Check if already assigned
     const existing = window.localStorage.getItem(storageKey);
     if (existing === "A" || existing === "B") {
       setVariant(existing);
       return;
     }
 
-    // New visitor → random 50/50
-    const randomVariant = Math.random() < 0.5 ? "A" : "B";
-    window.localStorage.setItem(storageKey, randomVariant);
-    setVariant(randomVariant);
+    // Otherwise assign randomly
+    const chosen = Math.random() < 0.5 ? "A" : "B";
+    window.localStorage.setItem(storageKey, chosen);
+    setVariant(chosen);
   }, []);
 
   if (!variant) return <p>Loading A/B test…</p>;
@@ -33,30 +32,48 @@ export default function ABTestPage() {
   const label = variant === "A" ? "kudos" : "thanks";
 
   return (
-    <main style={{ padding: 32 }}>
-      <h1>A/B Test Page</h1>
+    <main
+      style={{
+        padding: "40px",
+        fontFamily: "system-ui, sans-serif",
+        maxWidth: "600px",
+        margin: "0 auto",
+        textAlign: "left",
+      }}
+    >
+      <h1 style={{ marginBottom: "16px" }}>A/B Test Page</h1>
 
-      <h2>Team Member Nicknames</h2>
-      <ul>
+      <h2 style={{ marginBottom: "8px" }}>Team Member Nicknames</h2>
+
+      <ul style={{ marginBottom: "32px", paddingLeft: "20px" }}>
         {TEAM_MEMBERS.map((name) => (
-          <li key={name}>{name}</li>
+          <li key={name} style={{ marginBottom: "6px" }}>
+            {name}
+          </li>
         ))}
       </ul>
 
+      {/* FIXED BUTTON — now visibly styled */}
       <button
         id="abtest"
         style={{
-          padding: "12px 24px",
+          padding: "12px 28px",
+          backgroundColor: "#0070f3",
+          color: "white",
+          border: "none",
+          borderRadius: "6px",
           fontSize: "1rem",
-          marginTop: "24px",
+          cursor: "pointer",
+          display: "inline-block",
         }}
       >
         {label}
       </button>
 
-      <p style={{ marginTop: "16px" }}>
+      <p style={{ marginTop: "24px", fontSize: "1.1rem" }}>
         You are seeing variant: <strong>{variant}</strong>
       </p>
     </main>
   );
 }
+

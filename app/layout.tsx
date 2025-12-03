@@ -40,4 +40,16 @@ export default function RootLayout({
   )
 }
 
+import "./globals.css";
+import { GoogleAnalytics } from "./GoogleAnalytics";
 
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <GoogleAnalytics />
+      </body>
+    </html>
+  );
+}

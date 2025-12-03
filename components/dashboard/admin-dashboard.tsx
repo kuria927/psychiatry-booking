@@ -210,7 +210,7 @@ export function AdminDashboard() {
                       />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="specialty">Specialty *</Label>
+                      <Label htmlFor="specialty">Subspecialty *</Label>
                       <Input
                         id="specialty"
                         name="specialty"

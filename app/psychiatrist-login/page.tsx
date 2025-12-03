@@ -41,6 +41,21 @@ export default function PsychiatristLogin() {
       if (authError) throw authError
 
       if (authData.user) {
+        // Verify user is a psychiatrist
+        const { data: psychiatrist, error: psychError } = await supabase
+          .from("psychiatrists")
+          .select("id")
+          .eq("email", authData.user.email)
+          .single()
+
+        if (psychError || !psychiatrist) {
+          // Sign out the user since they're not a psychiatrist
+          await supabase.auth.signOut()
+          setError("Psychiatrist account not found")
+          setLoading(false)
+          return
+        }
+
         router.push("/dashboard")
         router.refresh()
       }

@@ -47,21 +47,39 @@ export default function Home() {
     let filtered = [...psychiatrists]
 
     if (nameFilter) {
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(nameFilter.toLowerCase())
-      )
+      filtered = filtered.filter((p) => {
+        if (!p.name || typeof p.name !== "string") return false
+        try {
+          return p.name.toLowerCase().includes(nameFilter.toLowerCase())
+        } catch (error) {
+          console.error("Error filtering by name:", error)
+          return false
+        }
+      })
     }
 
     if (locationFilter) {
-      filtered = filtered.filter((p) =>
-        p.location.toLowerCase().includes(locationFilter.toLowerCase())
-      )
+      filtered = filtered.filter((p) => {
+        if (!p.location || typeof p.location !== "string") return false
+        try {
+          return p.location.toLowerCase().includes(locationFilter.toLowerCase())
+        } catch (error) {
+          console.error("Error filtering by location:", error)
+          return false
+        }
+      })
     }
 
     if (specialtyFilter) {
-      filtered = filtered.filter((p) =>
-        p.specialty.toLowerCase().includes(specialtyFilter.toLowerCase())
-      )
+      filtered = filtered.filter((p) => {
+        if (!p.specialty || typeof p.specialty !== "string") return false
+        try {
+          return p.specialty.toLowerCase().includes(specialtyFilter.toLowerCase())
+        } catch (error) {
+          console.error("Error filtering by subspecialty:", error)
+          return false
+        }
+      })
     }
 
     setFilteredPsychiatrists(filtered)
@@ -117,12 +135,12 @@ export default function Home() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="specialty">Specialty</Label>
+              <Label htmlFor="specialty">Subspecialty</Label>
               <Input
                 id="specialty"
                 value={specialtyFilter}
                 onChange={(e) => setSpecialtyFilter(e.target.value)}
-                placeholder="Filter by specialty..."
+                placeholder="Filter by subspecialty..."
               />
             </div>
           </div>

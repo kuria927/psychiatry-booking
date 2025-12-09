@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 const TEAM_MEMBERS = ["Laure", "Yiqi", "Cindy"];
+const STORAGE_KEY = "abtest-variant";
 
 declare global {
   interface Window {
@@ -11,36 +12,34 @@ declare global {
 }
 
 export default function ABTestPage() {
-  const [variant, setVariant] = useState<string | null>(null);
+  const [variant, setVariant] = useState<"A" | "B" | null>(null);
 
+  // STEP 1: Assign or Load Variant
   useEffect(() => {
-    const storageKey = "abtest-variant";
+    const existing = window.localStorage.getItem(STORAGE_KEY);
 
-    // If user already assigned a variant
-    const existing = window.localStorage.getItem(storageKey);
     if (existing === "A" || existing === "B") {
       setVariant(existing);
 
-      // Analytics: track returning users
+      // STEP 2: Send to GA (returning user)
       window.gtag?.("event", "ab_test_variant", {
-        variant: existing,
+        variant_id: existing,     // <-- THIS is what GA will use
         visitor_type: "returning",
       });
 
       return;
     }
 
-    // Assign new variant
+    // New user → assign new variant
     const chosen = Math.random() < 0.5 ? "A" : "B";
-    window.localStorage.setItem(storageKey, chosen);
+    window.localStorage.setItem(STORAGE_KEY, chosen);
     setVariant(chosen);
 
-    // Analytics: track first-time assignment
+    // STEP 2: Send to GA (new user)
     window.gtag?.("event", "ab_test_variant", {
-      variant: chosen,
+      variant_id: chosen,        // <-- SAME param name
       visitor_type: "new",
     });
-
   }, []);
 
   if (!variant) return <p>Loading A/B test…</p>;
@@ -68,6 +67,12 @@ export default function ABTestPage() {
 
       <button
         id="abtest"
+        onClick={() => {
+          // Track engagement per variant
+          window.gtag?.("event", "abtest_button_click", {
+            variant_id: variant,
+          });
+        }}
         style={{
           padding: "12px 28px",
           backgroundColor: "#1a73e8",
@@ -76,7 +81,6 @@ export default function ABTestPage() {
           borderRadius: "6px",
           fontSize: "1rem",
           cursor: "pointer",
-          display: "inline-block",
         }}
       >
         {label}
@@ -88,5 +92,3 @@ export default function ABTestPage() {
     </main>
   );
 }
-
-

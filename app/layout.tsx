@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Navbar } from "@/components/navbar"
+import { GoogleAnalytics } from "./GoogleAnalytics"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 /**
  * Root layout component
- * Wraps the entire application with theme provider and navigation
+ * Wraps the entire application with theme provider, navigation, and analytics
  */
 export default function RootLayout({
   children,
@@ -33,23 +34,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Navbar />
-          <main className="container mx-auto px-4 py-8">{children}</main>
+          <main className="container mx-auto px-4 py-8">
+            {children}
+          </main>
+          {/* GA at the bottom of body */}
+          <GoogleAnalytics />
         </ThemeProvider>
       </body>
     </html>
   )
-}
-
-import "./globals.css";
-import { GoogleAnalytics } from "./GoogleAnalytics";
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>
-        {children}
-        <GoogleAnalytics />
-      </body>
-    </html>
-  );
 }

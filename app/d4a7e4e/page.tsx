@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+type Variant = "A" | "B";
+type VisitorType = "new" | "returning";
+
 const TEAM_MEMBERS = ["Laure", "Yiqi", "Cindy"];
 const STORAGE_KEY = "abtest-variant";
 
@@ -12,37 +15,44 @@ declare global {
 }
 
 export default function ABTestPage() {
-  const [variant, setVariant] = useState<"A" | "B" | null>(null);
+  const [variant, setVariant] = useState<Variant | null>(null);
 
-  // STEP 1: Assign or Load Variant
   useEffect(() => {
-    const existing = window.localStorage.getItem(STORAGE_KEY);
-
-    if (existing === "A" || existing === "B") {
-      setVariant(existing);
-
-      // STEP 2: Send to GA (returning user)
+    const sendVariantToGA = (v: Variant, visitorType: VisitorType) => {
+      // fires once GA is ready
       window.gtag?.("event", "ab_test_variant", {
-        variant_id: existing,     // <-- THIS is what GA will use
-        visitor_type: "returning",
+        variant_id: v,          // used for the custom dimension
+        visitor_type: visitorType,
       });
+    };
 
-      return;
-    }
+    // wait until GA script has loaded and window.gtag exists
+    const timer = setInterval(() => {
+      if (!window.gtag) return; // GA not ready yet
 
-    // New user → assign new variant
-    const chosen = Math.random() < 0.5 ? "A" : "B";
-    window.localStorage.setItem(STORAGE_KEY, chosen);
-    setVariant(chosen);
+      clearInterval(timer);     // GA is ready, stop polling
 
-    // STEP 2: Send to GA (new user)
-    window.gtag?.("event", "ab_test_variant", {
-      variant_id: chosen,        // <-- SAME param name
-      visitor_type: "new",
-    });
+      const existing = window.localStorage.getItem(STORAGE_KEY) as Variant | null;
+
+      if (existing === "A" || existing === "B") {
+        setVariant(existing);
+        sendVariantToGA(existing, "returning");
+        return;
+      }
+
+      // new visitor → assign a variant
+      const chosen: Variant = Math.random() < 0.5 ? "A" : "B";
+      window.localStorage.setItem(STORAGE_KEY, chosen);
+      setVariant(chosen);
+      sendVariantToGA(chosen, "new");
+    }, 300);
+
+    return () => clearInterval(timer);
   }, []);
 
-  if (!variant) return <p>Loading A/B test…</p>;
+  if (!variant) {
+    return <p style={{ padding: 40 }}>Loading A/B test…</p>;
+  }
 
   const label = variant === "A" ? "kudos" : "thanks";
 
@@ -58,7 +68,6 @@ export default function ABTestPage() {
       <h1>A/B Test Page</h1>
 
       <h2>Team Member Nicknames</h2>
-
       <ul style={{ marginBottom: "32px", paddingLeft: "20px" }}>
         {TEAM_MEMBERS.map((name) => (
           <li key={name}>{name}</li>
@@ -68,7 +77,7 @@ export default function ABTestPage() {
       <button
         id="abtest"
         onClick={() => {
-          // Track engagement per variant
+          // track engagement per variant
           window.gtag?.("event", "abtest_button_click", {
             variant_id: variant,
           });

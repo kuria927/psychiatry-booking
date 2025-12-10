@@ -59,20 +59,26 @@ A complete Next.js web application for managing a psychiatrist directory and app
    ```
 
 3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
+   - Create a `.env.local` file in the root directory
+   - Add the following environment variables:
+     ```env
+     # Supabase Configuration
+     NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+     
+     # Admin Credentials (optional, for admin login)
+     NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
+     NEXT_PUBLIC_ADMIN_PASSWORD=your_secure_password
+     
+     # Port Configuration (Next.js uses PORT env var automatically)
+     # PORT=3000
+     ```
+   - **Note**: Never commit `.env.local` to version control. The app follows 12-Factor App principles and uses environment variables for all configuration.
 
 4. **Configure Supabase**
    - Create a new Supabase project at [supabase.com](https://supabase.com)
    - Get your project URL and anon key from the Supabase dashboard
-   - Update `.env.local` with your Supabase credentials:
-     ```env
-     NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-     NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-     NEXT_PUBLIC_ADMIN_PASSWORD=your_secure_password
-     ```
+   - Update `.env.local` with your Supabase credentials
 
 5. **Set up the database**
    - Go to your Supabase project dashboard
@@ -243,12 +249,64 @@ psychiatry-booking/
 
 ## Development
 
+### Code Quality
+
+This project uses ESLint and Prettier for code quality and formatting:
+
+```bash
+# Run linting
+npm run lint
+
+# Fix linting issues automatically
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check formatting without making changes
+npm run format:check
+```
+
+### Testing
+
+The project includes unit and integration tests using Jest and React Testing Library:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate test coverage report
+npm run test:coverage
+```
+
+#### Test Structure
+
+- **Unit Tests**: Located in `__tests__/lib/` and `__tests__/components/`
+  - Test utility functions and individual components
+  - Cover edge cases and error handling
+
+- **Integration Tests**: Located in `__tests__/integration/`
+  - Test complete user flows (e.g., authentication, form submission)
+  - Verify component interactions
+
+#### Writing Tests
+
+- Tests should cover both success and error paths
+- Use descriptive test names that explain what is being tested
+- Mock external dependencies (Supabase, Next.js router, etc.)
+- Follow the Arrange-Act-Assert pattern
+
 ### Adding New Features
 
 1. Create components in the `components/` directory
 2. Add API routes in `app/api/` for server-side logic
 3. Update types in `types/database.ts` as needed
 4. Follow the existing code structure and patterns
+5. Write tests for new functionality
+6. Ensure code passes linting and formatting checks
 
 ### Styling
 
@@ -256,6 +314,15 @@ psychiatry-booking/
 - Use shadcn/ui components for UI elements
 - Follow the dark mode theme patterns
 - Maintain responsive design
+
+### Code Organization
+
+The project follows Next.js App Router conventions and DRY principles:
+
+- **Shared utilities**: `lib/formatters.ts`, `lib/utils.ts`
+- **Reusable components**: `components/ui/` and `components/`
+- **Type definitions**: `types/database.ts`
+- **Environment configuration**: All config via `.env.local` (12-Factor App compliant)
 
 ## Troubleshooting
 

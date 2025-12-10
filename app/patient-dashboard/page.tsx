@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { supabase, signOut } from "@/lib/supabase"
 import { AppointmentRequest } from "@/types/database"
+import { normalizeArray, formatList } from "@/lib/formatters"
 import {
   Dialog,
   DialogContent,
@@ -56,7 +57,6 @@ export default function PatientDashboard() {
   const router = useRouter()
   const [requests, setRequests] = useState<AppointmentRequest[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [processingId, setProcessingId] = useState<string | null>(null)
@@ -73,8 +73,6 @@ export default function PatientDashboard() {
         router.push("/patient-login")
         return
       }
-
-      setUser(session.user)
 
       const { data: patient } = await supabase
         .from("patients")
@@ -295,22 +293,6 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-function formatList(values: string[]) {
-  if (!values || values.length === 0) return "Not provided"
-  return values.join(", ")
-}
-
-function normalizeArray(value?: string[] | string | null): string[] {
-  if (!value) return []
-  if (Array.isArray(value)) return value
-  try {
-    const parsed = JSON.parse(value)
-    if (Array.isArray(parsed)) return parsed
-  } catch {
-    // ignore JSON parse errors
-  }
-  return [value].filter(Boolean)
-}
 
 function EditAppointmentDialog({
   request,

@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { supabase } from "@/lib/supabase"
 import { AppointmentRequest } from "@/types/database"
 import { useRouter } from "next/navigation"
+import { formatList } from "@/lib/formatters"
 
 interface PsychiatristDashboardProps {
   userId: string
@@ -351,32 +352,6 @@ const getPreviewText = (text?: string | null) => {
   return text.length > 100 ? `${text.slice(0, 100)}…` : text
 }
 
-const formatList = (values?: string[] | string | null) => {
-  if (!values) return "Not provided"
-
-  if (Array.isArray(values)) {
-    return values.length > 0 ? values.join(", ") : "Not provided"
-  }
-
-  // Some Supabase configurations may return arrays as serialized strings
-  if (typeof values === "string") {
-    const trimmed = values.trim()
-    if (!trimmed) return "Not provided"
-
-    try {
-      const parsed = JSON.parse(trimmed)
-      if (Array.isArray(parsed)) {
-        return parsed.length > 0 ? parsed.join(", ") : "Not provided"
-      }
-    } catch {
-      // Not JSON, fall through to return trimmed string
-    }
-
-    return trimmed
-  }
-
-  return "Not provided"
-}
 
 function DetailRow({ label, value }: { label: string; value: ReactNode }) {
   return (

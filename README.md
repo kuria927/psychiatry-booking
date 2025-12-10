@@ -1,37 +1,47 @@
-# Psychiatry Directory & Appointment Request System
+# Psychiatry Booking Platform
 
-A complete Next.js web application for managing a psychiatrist directory and appointment requests. Built with Next.js, TypeScript, Tailwind CSS, shadcn/ui, and Supabase.
+A full-stack web application that connects patients seeking mental-health support with psychiatrists. The platform includes patient intake workflows, psychiatrist dashboards, specialty filtering, and a complete CI/CD deployment pipeline.
 
-## Features
+This project was developed as part of the Yale SOM Software Engineering course, following a multi-sprint Agile process with production deployment and an A/B testing endpoint.
 
-### Patient (Public)
-- Browse a public list of psychiatrists
-- View detailed psychiatrist profile pages
-- Submit appointment request forms
-- See on-screen confirmation messages after submission
+---
 
-### Psychiatrist (Authenticated)
-- Login with Supabase authentication (email + password)
-- Access dashboard showing their appointment requests
-- View request details (name, email, preferred date/time, message)
-- Update request status: Pending → Approved, Declined, or Completed
+## Project Description
 
-### Admin (Authenticated)
-- Login using hardcoded admin credentials from .env
-- Access dashboard to:
-  - Add, edit, or delete psychiatrist profiles
-  - View all appointment requests
-  - See summary stats (total psychiatrists, total pending requests)
+Finding a psychiatrist is often difficult due to inconsistent directories, unclear specialties, and the lack of a standardized intake process.
 
-## Tech Stack
+This platform provides the following features:
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS + shadcn/ui
-- **Authentication**: Supabase Auth (psychiatrists) + Environment variables (admin)
-- **Database**: Supabase (PostgreSQL)
-- **Forms**: React Hook Form
-- **Theme**: Dark mode support with theme toggle
+### For Patients
+- Email-based sign-up (MVP)
+- Short, non-sensitive intake form
+- Ability to edit intake form while appointment request is pending
+- Dashboard showing request status
+
+### For Psychiatrists
+- Dashboard with summarized intake submissions
+- Expandable full intake form view
+- Standardized specialty categories
+
+### For Admins (MVP)
+- Basic directory data viewing and management
+
+---
+
+## Features Implemented
+
+- Patient sign-up and session handling  
+- Psychiatrist dashboard (summary and detailed intake view)  
+- Patient dashboard with editable pending requests  
+- Non-PHI intake form  
+- Specialty filter on psychiatrist directory  
+- A/B testing endpoint (`/d4a7e4e`)  
+- Full CI/CD on Vercel  
+- Production deployment with stable builds  
+
+---
+
+# Setup Instructions
 
 ## Getting Started
 
@@ -59,20 +69,26 @@ A complete Next.js web application for managing a psychiatrist directory and app
    ```
 
 3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   ```
+   - Create a `.env.local` file in the root directory
+   - Add the following environment variables:
+     ```env
+     # Supabase Configuration
+     NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+     
+     # Admin Credentials (optional, for admin login)
+     NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
+     NEXT_PUBLIC_ADMIN_PASSWORD=your_secure_password
+     
+     # Port Configuration (Next.js uses PORT env var automatically)
+     # PORT=3000
+     ```
+   - **Note**: Never commit `.env.local` to version control. The app follows 12-Factor App principles and uses environment variables for all configuration.
 
 4. **Configure Supabase**
    - Create a new Supabase project at [supabase.com](https://supabase.com)
    - Get your project URL and anon key from the Supabase dashboard
-   - Update `.env.local` with your Supabase credentials:
-     ```env
-     NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-     NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-     NEXT_PUBLIC_ADMIN_PASSWORD=your_secure_password
-     ```
+   - Update `.env.local` with your Supabase credentials
 
 5. **Set up the database**
    - Go to your Supabase project dashboard
@@ -215,7 +231,92 @@ psychiatry-booking/
 - `/admin-login` - Admin login page
 - `/dashboard` - Shared dashboard (role-based rendering)
 
-## Usage
+# Deployment Information
+
+## Production Deployment
+
+Production URL: https://psychiatry-booking.vercel.app/
+
+The production environment includes:
+
+- Patient sign-up and dashboard  
+- Psychiatrist dashboard with summarized and full intake views  
+- Updated specialty filtering  
+- Stable intake and appointment request workflows  
+- A/B test endpoint (`/d4a7e4e`)  
+- Improved authentication logic (in progress)  
+
+
+---
+
+## Deployment Process (CI/CD)
+
+Deployment is fully automated using Vercel's CI/CD pipeline:
+
+1. Push or merge changes into the `main` branch on GitHub  
+2. Vercel automatically runs the build and deployment process  
+3. The production environment updates immediately  
+4. No manual deployment or configuration steps are required  
+
+This setup fulfills the course requirement for an automated deployment pipeline.
+
+---
+
+# Team Member Contributions
+
+## Cindy
+- Designed and implemented the patient intake form  
+- Developed the patient dashboard and intake editing logic  
+- Improved UI/UX consistency across key pages  
+- Built the A/B test interface  
+- Wrote and organized the README and final submission documentation  
+
+## Yiqi
+- Implemented authentication and session management  
+- Set up the Vercel CI/CD deployment pipeline  
+- Developed the A/B test endpoint backend logic  
+- Implemented specialty filtering and improved search accuracy  
+- Fixed the sign-out session bug  
+- Integrated Frontend and Backend systems  
+
+## Laure
+- Cleaned and standardized specialty and profile dataset  
+- Configured Google Analytics tracking for the A/B test page  
+- Conducted QA testing for dashboards and forms  
+- Improved filtering logic based on cleaned data  
+
+---
+
+# Technology Stack
+
+## Frontend
+- Next.js (App Router)
+- React
+- TypeScript
+- TailwindCSS
+
+## Backend
+- Django REST Framework
+- Python
+- PostgreSQL
+- Gunicorn (application server)
+
+## Infrastructure & Deployment
+- Vercel (frontend hosting and CI/CD)
+- Fly.io (backend hosting)
+- GitHub (repository and version control)
+- Google Analytics (A/B testing analytics)
+
+## Additional Tools
+- SHA1 hashing tool for A/B test endpoint generation
+- npm (frontend package manager)
+- pip (backend package manager)
+
+---
+# How to compute and access the A/B test endpoint
+
+---
+# Usage
 
 ### As a Patient
 1. Browse psychiatrists on the home page
@@ -243,12 +344,64 @@ psychiatry-booking/
 
 ## Development
 
+### Code Quality
+
+This project uses ESLint and Prettier for code quality and formatting:
+
+```bash
+# Run linting
+npm run lint
+
+# Fix linting issues automatically
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Check formatting without making changes
+npm run format:check
+```
+
+### Testing
+
+The project includes unit and integration tests using Jest and React Testing Library:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate test coverage report
+npm run test:coverage
+```
+
+#### Test Structure
+
+- **Unit Tests**: Located in `__tests__/lib/` and `__tests__/components/`
+  - Test utility functions and individual components
+  - Cover edge cases and error handling
+
+- **Integration Tests**: Located in `__tests__/integration/`
+  - Test complete user flows (e.g., authentication, form submission)
+  - Verify component interactions
+
+#### Writing Tests
+
+- Tests should cover both success and error paths
+- Use descriptive test names that explain what is being tested
+- Mock external dependencies (Supabase, Next.js router, etc.)
+- Follow the Arrange-Act-Assert pattern
+
 ### Adding New Features
 
 1. Create components in the `components/` directory
 2. Add API routes in `app/api/` for server-side logic
 3. Update types in `types/database.ts` as needed
 4. Follow the existing code structure and patterns
+5. Write tests for new functionality
+6. Ensure code passes linting and formatting checks
 
 ### Styling
 
@@ -256,6 +409,15 @@ psychiatry-booking/
 - Use shadcn/ui components for UI elements
 - Follow the dark mode theme patterns
 - Maintain responsive design
+
+### Code Organization
+
+The project follows Next.js App Router conventions and DRY principles:
+
+- **Shared utilities**: `lib/formatters.ts`, `lib/utils.ts`
+- **Reusable components**: `components/ui/` and `components/`
+- **Type definitions**: `types/database.ts`
+- **Environment configuration**: All config via `.env.local` (12-Factor App compliant)
 
 ## Troubleshooting
 
@@ -283,5 +445,3 @@ This project is licensed under the MIT License.
 ## Support
 
 For issues or questions, please open an issue on the repository.
-
-
